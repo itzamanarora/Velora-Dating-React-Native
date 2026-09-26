@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { View } from 'tamagui';
 import { BlurBackdrop } from './BlurView';
 
-export type AuthAtmosphereVariant = 'login' | 'signup' | 'forgot' | 'reset';
+export type AuthAtmosphereVariant = 'login' | 'signup' | 'forgot' | 'reset' | 'verify';
 
 type CircleProps = {
   top?: number;
@@ -38,6 +38,12 @@ const LAYOUTS: Record<AuthAtmosphereVariant, CircleProps[]> = {
     { top: -100, left: -40, size: 240, color: '$brand200', opacity: 0.3 },
     { bottom: -90, left: -100, size: 300, color: '$primary', opacity: 0.2 },
     { bottom: 80, right: -50, size: 250, color: '$brand300', opacity: 0.34 },
+  ],
+  verify: [
+    { top: -80, left: -60, size: 290, color: '$brand300', opacity: 0.36 },
+    { top: 120, right: -90, size: 250, color: '$primary', opacity: 0.22 },
+    { bottom: 40, left: -80, size: 270, color: '$brand200', opacity: 0.38 },
+    { bottom: -60, right: -10, size: 210, color: '$brand400', opacity: 0.2 },
   ],
 };
 

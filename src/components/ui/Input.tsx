@@ -13,7 +13,7 @@ export const Input = styled(TInput, {
   placeholderTextColor: '$placeholderColor',
   focusStyle: {
     borderColor: '$borderColorFocus',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFBFC',
     outlineWidth: 0,
   },
   hoverStyle: {

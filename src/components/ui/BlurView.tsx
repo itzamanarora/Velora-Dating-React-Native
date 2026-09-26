@@ -51,7 +51,7 @@ export function BlurBackdrop({ children, intensity = 0.55, style }: BlurBackdrop
   }
 
   const frostStyle: WebViewStyle = {
-    backgroundColor: `rgba(232, 243, 252, ${intensity})`,
+    backgroundColor: `rgba(252, 232, 238, ${intensity})`,
   };
 
   if (Platform.OS === 'web') {

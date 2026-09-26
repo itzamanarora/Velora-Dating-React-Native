@@ -11,6 +11,7 @@ import { API_CONFIG, apiRoot } from './config';
 import { http } from './client';
 import { modules, auth, profile } from './endpoints';
 import {
+  loadTokens,
   setAccessToken,
   getAccessToken,
   clearAccessToken,
@@ -28,6 +29,7 @@ export const api = {
   modules,
   endpoints: { auth, profile },
 
+  loadTokens,
   setToken: setAccessToken,
   getToken: getAccessToken,
   clearToken: clearAccessToken,
@@ -40,6 +42,7 @@ export {
   apiCall,
   ApiError,
   API_CONFIG,
+  loadTokens,
   setAccessToken,
   getAccessToken,
   clearAccessToken,

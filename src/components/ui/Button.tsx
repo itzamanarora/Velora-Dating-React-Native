@@ -6,6 +6,11 @@ const StyledButton = styled(TButton, {
   borderRadius: '$6',
   height: '$4.5',
   fontWeight: '600',
+  shadowColor: 'rgba(232, 68, 109, 0.22)',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.22,
+  shadowRadius: 10,
+  elevation: 4,
   pressStyle: {
     scale: 0.98,
     opacity: 0.92,
@@ -38,6 +43,9 @@ const StyledButton = styled(TButton, {
         backgroundColor: 'transparent',
         color: '$primary',
         borderWidth: 0,
+        shadowColor: 'transparent',
+        shadowOpacity: 0,
+        elevation: 0,
         hoverStyle: { backgroundColor: '$mutedBackground' },
         pressStyle: { backgroundColor: '$secondary', scale: 0.98 },
       },
@@ -82,7 +90,7 @@ export function Button({
       icon={loading ? undefined : icon}
       {...props}
     >
-      {loading ? <Spinner size="small" color="white" /> : children}
+      {loading ? <Spinner size="small" color="$primary" /> : children}
     </StyledButton>
   );
 }

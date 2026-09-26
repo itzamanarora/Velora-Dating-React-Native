@@ -1,5 +1,5 @@
-import { Label, YStack } from 'tamagui';
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
+import { Label, XStack, YStack } from 'tamagui';
 import { Input, type InputProps } from './Input';
 import { Caption, ErrorText } from './Text';
 
@@ -20,7 +20,8 @@ export function TextField({
   rightElement,
   ...inputProps
 }: TextFieldProps) {
-  const fieldId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const generatedId = useId();
+  const fieldId = id ?? (label ? `${label.toLowerCase().replace(/\s+/g, '-')}-${generatedId}` : undefined);
 
   return (
     <YStack gap="$1.5" width="100%">
@@ -30,15 +31,32 @@ export function TextField({
         </Label>
       ) : null}
 
-      <Input
-        id={fieldId}
-        error={!!error}
-        aria-invalid={!!error}
-        {...inputProps}
-      />
+      <XStack alignItems="center" position="relative" width="100%" pointerEvents="box-none">
+        {leftElement ? (
+          <XStack position="absolute" left={12} zIndex={10} alignItems="center" justifyContent="center">
+            {leftElement}
+          </XStack>
+        ) : null}
+
+        <Input
+          id={fieldId}
+          error={!!error}
+          aria-invalid={!!error}
+          paddingLeft={leftElement ? (inputProps.paddingLeft ?? 40) : inputProps.paddingLeft}
+          paddingRight={rightElement ? (inputProps.paddingRight ?? 44) : inputProps.paddingRight}
+          {...inputProps}
+        />
+
+        {rightElement ? (
+          <XStack position="absolute" right={12} zIndex={10} alignItems="center" justifyContent="center">
+            {rightElement}
+          </XStack>
+        ) : null}
+      </XStack>
 
       {error ? <ErrorText>{error}</ErrorText> : null}
       {!error && hint ? <Caption>{hint}</Caption> : null}
     </YStack>
   );
 }
+

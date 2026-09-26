@@ -27,13 +27,32 @@ export default function LoginScreen() {
       });
 
       setTimeout(() => {
-        router.replace('/');
+        router.replace('/welcome');
       }, 800);
     } catch (err) {
+      const errorMsg = err instanceof ApiError ? err.message : (err as any)?.message || '';
+      const isEmailUnverified =
+        typeof errorMsg === 'string' &&
+        (errorMsg.toLowerCase().includes('verify your email') ||
+          errorMsg.toLowerCase().includes('verify email'));
+
+      if (isEmailUnverified) {
+        Toast.show({
+          type: 'info',
+          text1: 'Email Verification Required',
+          text2: apiToastMessage(errorMsg) || 'Please verify your email before logging in.',
+        });
+        router.push({
+          pathname: '/auth/verify-email',
+          params: { email, autoResend: 'true' },
+        });
+        return;
+      }
+
       Toast.show({
         type: 'error',
         text1: 'Sign in failed',
-        text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
+        text2: apiToastMessage(errorMsg),
       });
     } finally {
       setIsLoading(false);

@@ -87,17 +87,17 @@ const tokens = createTokens({
   color: {
     white: '#FFFFFF',
     black: '#0B1220',
-    // Brand — Velora blue (aligned with splash #208AEF)
-    brand50: '#E8F3FC',
-    brand100: '#C5E1F8',
-    brand200: '#8FC4F1',
-    brand300: '#58A6EA',
-    brand400: '#2B8FE4',
-    brand500: '#208AEF',
-    brand600: '#1A6FC0',
-    brand700: '#145490',
-    brand800: '#0E3A63',
-    brand900: '#08203A',
+    // Brand — Velora romantic rose
+    brand50: '#FFF5F7',
+    brand100: '#FFF0F3',
+    brand200: '#FFCCD5',
+    brand300: '#FF99AC',
+    brand400: '#FF6B81',
+    brand500: '#E8446D',
+    brand600: '#D63A5E',
+    brand700: '#C42E50',
+    brand800: '#9B8A8E',
+    brand900: '#756A6D',
     // Neutrals
     gray50: '#F7F9FC',
     gray100: '#EEF2F7',
@@ -118,41 +118,41 @@ const tokens = createTokens({
 });
 
 const lightTheme = {
-  // Soft blue-tinted light canvas
-  background: '#EAF3FC',
+  // Soft rose-tinted light canvas
+  background: '#FFF5F7',
   backgroundHover: tokens.color.brand50,
   backgroundPress: tokens.color.brand100,
   backgroundFocus: tokens.color.brand50,
   backgroundStrong: tokens.color.white,
-  backgroundTransparent: 'rgba(234,243,252,0)',
+  backgroundTransparent: 'rgba(255,245,247,0)',
   color: tokens.color.gray900,
   colorHover: tokens.color.gray800,
   colorPress: tokens.color.gray700,
   colorFocus: tokens.color.gray800,
   colorTransparent: 'rgba(15,24,36,0)',
-  borderColor: 'rgba(32, 138, 239, 0.18)',
-  borderColorHover: tokens.color.brand200,
+  borderColor: '#F0D5DA',
+  borderColorHover: '#E8B4BE',
   borderColorPress: tokens.color.brand300,
   borderColorFocus: tokens.color.brand500,
-  placeholderColor: tokens.color.gray400,
+  placeholderColor: '#C4A0A8',
   outlineColor: tokens.color.brand200,
   // Brand aliases
   primary: tokens.color.brand500,
   primaryHover: tokens.color.brand600,
   primaryPress: tokens.color.brand700,
   primaryText: tokens.color.white,
-  secondary: tokens.color.brand50,
-  secondaryHover: tokens.color.brand100,
-  secondaryPress: tokens.color.brand200,
-  secondaryText: tokens.color.brand800,
-  muted: tokens.color.gray500,
-  mutedBackground: 'rgba(32, 138, 239, 0.08)',
+  secondary: tokens.color.brand100,
+  secondaryHover: tokens.color.brand200,
+  secondaryPress: tokens.color.brand300,
+  secondaryText: tokens.color.brand500,
+  muted: tokens.color.brand800,
+  mutedBackground: 'rgba(232, 68, 109, 0.08)',
   surface: 'rgba(255, 255, 255, 0.78)',
   surfaceHover: tokens.color.white,
   danger: tokens.color.danger,
   dangerBackground: tokens.color.dangerSoft,
   success: tokens.color.success,
-  shadowColor: 'rgba(26, 111, 192, 0.18)',
+  shadowColor: 'rgba(232, 68, 109, 0.08)',
 };
 
 const darkTheme = {
@@ -188,7 +188,7 @@ const darkTheme = {
   danger: tokens.color.danger,
   dangerBackground: '#3A1519',
   success: tokens.color.success,
-  shadowColor: 'rgba(0, 0, 0, 0.4)',
+  shadowColor: 'rgba(232, 68, 109, 0.2)',
 };
 
 const tamaguiConfig = createTamagui({

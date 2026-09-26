@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 import { XStack, YStack } from 'tamagui';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, Caption, TextField } from '@/components/ui';
 import { validateEmail, validatePassword } from '@/utils/validations';
 
@@ -12,6 +14,7 @@ export type LoginFormProps = {
 export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleSubmit = () => {
@@ -57,13 +60,26 @@ export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: Log
           if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
         }}
         placeholder="Enter your password"
-        secureTextEntry
+        secureTextEntry={!showPassword}
         autoCapitalize="none"
         autoComplete="password"
         textContentType="password"
         returnKeyType="go"
         onSubmitEditing={handleSubmit}
         error={errors.password}
+        rightElement={
+          <TouchableOpacity
+            onPress={() => setShowPassword((v) => !v)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+              size={22}
+              color="rgba(155,138,142,0.7)"
+            />
+          </TouchableOpacity>
+        }
       />
 
       <XStack justifyContent="flex-end" marginTop="$-2">
@@ -85,3 +101,4 @@ export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: Log
     </YStack>
   );
 }
+

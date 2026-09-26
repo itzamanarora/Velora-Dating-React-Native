@@ -37,7 +37,7 @@ export function GlassPanel({
       <GlassView
         glassEffectStyle="regular"
         colorScheme="light"
-        tintColor="rgba(232, 243, 252, 0.55)"
+        tintColor="rgba(252, 232, 238, 0.55)"
         style={[styles.base, { borderRadius, padding, overflow: 'hidden' }, style]}
       >
         {children}
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
   frost: {
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.85)',
-    shadowColor: '#1A6FC0',
+    shadowColor: '#C42E50',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.14,
     shadowRadius: 28,
     elevation: 8,
   },
   blueWash: {
-    backgroundColor: 'rgba(32, 138, 239, 0.06)',
+    backgroundColor: 'rgba(232, 68, 109, 0.06)',
   },
 });

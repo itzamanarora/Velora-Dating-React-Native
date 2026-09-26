@@ -1,4 +1,4 @@
-import type { EndpointDef } from '../types';
+import type { EndpointDef } from "../types";
 
 /**
  * Auth APIs — paths match backend Swagger exactly
@@ -7,44 +7,50 @@ import type { EndpointDef } from '../types';
 export const auth = {
   /** POST /api/v1/auth/login */
   login: {
-    method: 'POST',
-    path: '/login',
+    method: "POST",
+    path: "/login",
     auth: false,
   },
   /** POST /api/v1/auth/signup — register + send OTP */
   signup: {
-    method: 'POST',
-    path: '/signup',
+    method: "POST",
+    path: "/signup",
     auth: false,
   },
   /** POST /api/v1/auth/verify-otp */
   verifyOtp: {
-    method: 'POST',
-    path: '/verify-otp',
+    method: "POST",
+    path: "/verify-otp",
     auth: false,
   },
   /** POST /api/v1/auth/resend-otp */
   resendOtp: {
-    method: 'POST',
-    path: '/resend-otp',
+    method: "POST",
+    path: "/resend-otp",
     auth: false,
   },
   /** POST /api/v1/auth/forget-passwod (backend typo — keep as-is) */
   forgotPassword: {
-    method: 'POST',
-    path: '/forget-passwod',
+    method: "POST",
+    path: "/forget-passwod",
     auth: false,
   },
   /** POST /api/v1/auth/reset-password */
   resetPassword: {
-    method: 'POST',
-    path: '/reset-password',
+    method: "POST",
+    path: "/reset-password",
     auth: false,
   },
   /** POST /api/v1/auth/refresh-token */
   refreshToken: {
-    method: 'POST',
-    path: '/refresh-token',
+    method: "POST",
+    path: "/refresh-token",
+    auth: false,
+  },
+  /** POST /api/v1/auth/signout */
+  logout: {
+    method: "POST",
+    path: "/signout",
     auth: false,
   },
 } as const satisfies Record<string, EndpointDef>;
@@ -70,6 +76,7 @@ export type AuthPayloads = {
   forgotPassword: { email: string };
   resetPassword: { email: string; otp: string; newPassword: string };
   refreshToken: { refreshToken: string };
+  logout: { refreshToken: string };
 };
 
 export type AuthResults = {
@@ -80,4 +87,5 @@ export type AuthResults = {
   forgotPassword: MessageResponse;
   resetPassword: MessageResponse;
   refreshToken: AuthTokens;
+  logout: MessageResponse;
 };

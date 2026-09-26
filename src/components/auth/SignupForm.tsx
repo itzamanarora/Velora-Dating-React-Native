@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 import { YStack } from 'tamagui';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, FadeInView, TextField } from '@/components/ui';
 import { validateEmail, validateOtp, validatePassword } from '@/utils/validations';
 
@@ -22,6 +24,7 @@ export function SignupForm({
 }: SignupFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpVisible, setOtpVisible] = useState(false);
   const [errors, setErrors] = useState<{
@@ -92,7 +95,7 @@ export function SignupForm({
           if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
         }}
         placeholder="Create a password"
-        secureTextEntry
+        secureTextEntry={!showPassword}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
@@ -100,6 +103,19 @@ export function SignupForm({
         onSubmitEditing={otpVisible ? undefined : handleVerify}
         disabled={busy}
         error={errors.password}
+        rightElement={
+          <TouchableOpacity
+            onPress={() => setShowPassword((v) => !v)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+              size={22}
+              color="rgba(155,138,142,0.7)"
+            />
+          </TouchableOpacity>
+        }
       />
 
       {otpVisible ? (
