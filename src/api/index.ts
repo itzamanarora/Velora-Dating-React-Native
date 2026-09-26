@@ -2,47 +2,59 @@
  * Velora API layer
  *
  * 1. URL set karo → `src/api/config.ts`
- * 2. Endpoints add karo → `src/api/endpoints/<module>.ts`
- * 3. Page pe call karo:
- *
- *    import { api } from '@/api';
- *    const data = await api.call('auth.login', { email, password });
+ * 2. Endpoints → `src/api/endpoints/<module>.ts`
+ * 3. Page: const { data, message } = await api.call('auth.login', payload)
  */
 
 import { apiCall } from './call';
 import { API_CONFIG, apiRoot } from './config';
 import { http } from './client';
 import { modules, auth, profile } from './endpoints';
-import { setAccessToken, getAccessToken, clearAccessToken } from './token';
-import { ApiError } from './types';
+import {
+  setAccessToken,
+  getAccessToken,
+  clearAccessToken,
+  setTokens,
+  getRefreshToken,
+  clearTokens,
+} from './token';
+import { ApiError, apiToastMessage } from './types';
 
 export const api = {
-  /** Dotted endpoint call: api.call('auth.login', payload) */
   call: apiCall,
-
-  /** Raw axios instance if you ever need it */
   http,
-
-  /** Config + modules for inspection */
   config: API_CONFIG,
   root: apiRoot,
   modules,
   endpoints: { auth, profile },
 
-  /** Auth token helpers */
   setToken: setAccessToken,
   getToken: getAccessToken,
   clearToken: clearAccessToken,
+  setTokens,
+  getRefreshToken,
+  clearTokens,
 } as const;
 
-export { apiCall, ApiError, API_CONFIG, setAccessToken, getAccessToken, clearAccessToken };
+export {
+  apiCall,
+  ApiError,
+  API_CONFIG,
+  setAccessToken,
+  getAccessToken,
+  clearAccessToken,
+  setTokens,
+  getRefreshToken,
+  clearTokens,
+  apiToastMessage,
+};
 export type {
   EndpointName,
   EndpointPayloadMap,
   EndpointResultMap,
 } from './endpoints';
-export type { AuthPayloads, AuthResults } from './endpoints/auth';
+export type { AuthPayloads, AuthResults, AuthTokens } from './endpoints/auth';
 export type { Profile, ProfilePayloads, ProfileResults } from './endpoints/profile';
-export type { ApiResponse, ApiErrorBody } from './types';
+export type { ApiResponse, ApiErrorBody, ApiResult } from './types';
 
 export default api;

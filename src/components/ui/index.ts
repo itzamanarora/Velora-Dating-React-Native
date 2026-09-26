@@ -18,3 +18,4 @@ export { FadeInView, type FadeInViewProps } from './FadeIn';
 export { BrandMark, type BrandMarkProps } from './BrandMark';
 export { GlassPanel, type GlassPanelProps } from './GlassPanel';
 export { BlurBackdrop, type BlurBackdropProps } from './BlurView';
+export { AuthAtmosphere, type AuthAtmosphereProps, type AuthAtmosphereVariant } from './AuthAtmosphere';

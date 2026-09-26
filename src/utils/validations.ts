@@ -11,3 +11,9 @@ export const validatePassword = (password: string): string | null => {
   return null;
 };
 
+export const validateOtp = (otp: string): string | null => {
+  if (!otp) return 'OTP is required';
+  if (!/^\d{4,8}$/.test(otp.trim())) return 'Enter a valid OTP';
+  return null;
+};
+

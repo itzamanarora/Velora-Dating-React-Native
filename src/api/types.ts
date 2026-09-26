@@ -15,6 +15,12 @@ export type ApiResponse<T = unknown> = {
   data: T;
 };
 
+/** What `api.call` returns — data object + optional toast message */
+export type ApiResult<T> = {
+  data: T;
+  message?: string;
+};
+
 export type ApiErrorBody = {
   success?: boolean;
   message?: string;
@@ -31,4 +37,9 @@ export class ApiError extends Error {
     this.status = status;
     this.body = body;
   }
+}
+
+/** Prefer API message; fallback when backend sends nothing */
+export function apiToastMessage(message?: string | null) {
+  return message?.trim() || 'Something went wrong';
 }

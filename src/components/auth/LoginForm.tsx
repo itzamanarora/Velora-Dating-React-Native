@@ -5,10 +5,11 @@ import { validateEmail, validatePassword } from '@/utils/validations';
 
 export type LoginFormProps = {
   onSubmit: (email: string, password: string) => void;
+  onForgotPassword?: () => void;
   isLoading?: boolean;
 };
 
-export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
+export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -66,7 +67,7 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
       />
 
       <XStack justifyContent="flex-end" marginTop="$-2">
-        <Caption color="$primary" fontWeight="500">
+        <Caption color="$primary" fontWeight="600" onPress={onForgotPassword}>
           Forgot password?
         </Caption>
       </XStack>
@@ -77,7 +78,7 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
         size="$5"
         loading={isLoading}
         onPress={handleSubmit}
-        marginTop="$2"
+        marginTop="$1"
       >
         Sign in
       </Button>

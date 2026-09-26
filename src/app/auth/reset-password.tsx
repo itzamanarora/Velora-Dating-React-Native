@@ -1,49 +1,30 @@
 import { AuthScreenShell } from '@/components/auth/AuthScreenShell';
-import { SignupForm } from '@/components/auth/SignupForm';
+import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm';
 import { Caption } from '@/components/ui';
 import { api, ApiError, apiToastMessage } from '@/api';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 
-export default function SignUpScreen() {
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
+export default function ResetPasswordScreen() {
+  const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const router = useRouter();
+  const params = useLocalSearchParams<{ email?: string }>();
+  const initialEmail = typeof params.email === 'string' ? params.email : '';
 
-  const handleVerify = async (email: string, password: string) => {
-    setIsVerifying(true);
+  const handleSubmit = async (email: string, otp: string, newPassword: string) => {
+    setIsLoading(true);
     try {
-      const { data, message } = await api.call('auth.signup', { email, password });
+      const { data, message } = await api.call('auth.resetPassword', {
+        email,
+        otp,
+        newPassword,
+      });
 
       Toast.show({
         type: 'success',
-        text1: 'OTP sent',
-        text2: apiToastMessage(message || data.message),
-      });
-
-      return true;
-    } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: 'Signup failed',
-        text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
-      });
-      return false;
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  const handleConfirm = async (email: string, otp: string) => {
-    setIsConfirming(true);
-    try {
-      const { data, message } = await api.call('auth.verifyOtp', { email, otp });
-
-      Toast.show({
-        type: 'success',
-        text1: 'Verified',
+        text1: 'Password updated',
         text2: apiToastMessage(message || data.message),
       });
 
@@ -53,18 +34,19 @@ export default function SignUpScreen() {
     } catch (err) {
       Toast.show({
         type: 'error',
-        text1: 'OTP failed',
+        text1: 'Reset failed',
         text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
       });
     } finally {
-      setIsConfirming(false);
+      setIsLoading(false);
     }
   };
 
   const handleResend = async (email: string) => {
     setIsResending(true);
     try {
-      const { data, message } = await api.call('auth.resendOtp', { email });
+      // Re-trigger forgot flow to send a fresh OTP
+      const { data, message } = await api.call('auth.forgotPassword', { email });
 
       Toast.show({
         type: 'success',
@@ -84,24 +66,23 @@ export default function SignUpScreen() {
 
   return (
     <AuthScreenShell
-      variant="signup"
-      title="Join Velora"
-      subtitle="Create an account and start meeting people"
+      variant="reset"
+      title="Reset password"
+      subtitle="Enter the OTP and choose a new password"
       footer={
         <Caption>
-          Already have an account?{' '}
+          Back to{' '}
           <Caption color="$primary" fontWeight="600" onPress={() => router.push('/auth/login')}>
             Sign in
           </Caption>
         </Caption>
       }
     >
-      <SignupForm
-        onVerify={handleVerify}
-        onConfirm={handleConfirm}
+      <ResetPasswordForm
+        initialEmail={initialEmail}
+        onSubmit={handleSubmit}
         onResend={handleResend}
-        isVerifying={isVerifying}
-        isConfirming={isConfirming}
+        isLoading={isLoading}
         isResending={isResending}
       />
     </AuthScreenShell>

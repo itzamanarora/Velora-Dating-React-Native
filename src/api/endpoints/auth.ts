@@ -1,8 +1,8 @@
 import type { EndpointDef } from '../types';
 
 /**
- * /api/v1/auth/*
- * Add new auth routes here — pages only pass the endpoint name.
+ * Auth APIs — paths match backend Swagger exactly
+ * (including the forget-passwod typo).
  */
 export const auth = {
   /** POST /api/v1/auth/login */
@@ -11,62 +11,73 @@ export const auth = {
     path: '/login',
     auth: false,
   },
-  /** POST /api/v1/auth/signup */
+  /** POST /api/v1/auth/signup — register + send OTP */
   signup: {
     method: 'POST',
     path: '/signup',
     auth: false,
   },
-  /** POST /api/v1/auth/password-reset */
-  passwordReset: {
+  /** POST /api/v1/auth/verify-otp */
+  verifyOtp: {
     method: 'POST',
-    path: '/password-reset',
+    path: '/verify-otp',
     auth: false,
   },
-  /** POST /api/v1/auth/password-reset/confirm */
-  passwordResetConfirm: {
+  /** POST /api/v1/auth/resend-otp */
+  resendOtp: {
     method: 'POST',
-    path: '/password-reset/confirm',
+    path: '/resend-otp',
     auth: false,
   },
-  /** POST /api/v1/auth/logout */
-  logout: {
+  /** POST /api/v1/auth/forget-passwod (backend typo — keep as-is) */
+  forgotPassword: {
     method: 'POST',
-    path: '/logout',
-    auth: true,
+    path: '/forget-passwod',
+    auth: false,
   },
-  /** POST /api/v1/auth/refresh */
-  refresh: {
+  /** POST /api/v1/auth/reset-password */
+  resetPassword: {
     method: 'POST',
-    path: '/refresh',
+    path: '/reset-password',
+    auth: false,
+  },
+  /** POST /api/v1/auth/refresh-token */
+  refreshToken: {
+    method: 'POST',
+    path: '/refresh-token',
     auth: false,
   },
 } as const satisfies Record<string, EndpointDef>;
 
 export type AuthEndpoint = keyof typeof auth;
 
-/** Request / response shapes for auth endpoints */
+export type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
 export type AuthPayloads = {
   login: { email: string; password: string };
-  signup: { name: string; email: string; password: string };
-  passwordReset: { email: string };
-  passwordResetConfirm: { token: string; password: string };
-  logout: void;
-  refresh: { refreshToken: string };
+  signup: { email: string; password: string };
+  verifyOtp: { email: string; otp: string };
+  resendOtp: { email: string };
+  forgotPassword: { email: string };
+  resetPassword: { email: string; otp: string; newPassword: string };
+  refreshToken: { refreshToken: string };
 };
 
 export type AuthResults = {
-  login: {
-    token: string;
-    refreshToken?: string;
-    user: { id: string; name: string; email: string };
-  };
-  signup: {
-    token?: string;
-    user: { id: string; name: string; email: string };
-  };
-  passwordReset: { sent: boolean };
-  passwordResetConfirm: { reset: boolean };
-  logout: { success: boolean };
-  refresh: { token: string; refreshToken?: string };
+  login: AuthTokens;
+  signup: { message: string; email: string };
+  verifyOtp: MessageResponse;
+  resendOtp: MessageResponse;
+  forgotPassword: MessageResponse;
+  resetPassword: MessageResponse;
+  refreshToken: AuthTokens;
 };

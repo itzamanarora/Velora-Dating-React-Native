@@ -5,31 +5,31 @@ import {
   type EndpointPayloadMap,
   type EndpointResultMap,
 } from './endpoints';
-import type { ApiResponse } from './types';
+import type { ApiResponse, ApiResult } from './types';
 
 export type CallOptions = {
-  /** Extra query params */
   params?: Record<string, string | number | boolean | undefined>;
-  /** Override auth skip / force */
   headers?: Record<string, string>;
 };
 
+function extractMessage(body: unknown): string | undefined {
+  if (body && typeof body === 'object' && 'message' in body) {
+    const msg = (body as { message?: unknown }).message;
+    return typeof msg === 'string' ? msg : undefined;
+  }
+  return undefined;
+}
+
 /**
  * Call any registered endpoint by name.
- *
- * @example
- * const data = await apiCall('auth.login', { email, password });
- * // data → { token, user, ... }
- *
- * @example
- * const profile = await apiCall('profile.get');
+ * Returns `{ data, message }` — message comes from API when present.
  */
 export async function apiCall<N extends EndpointName>(
   name: N,
   ...args: EndpointPayloadMap[N] extends void
     ? [payload?: undefined, options?: CallOptions]
     : [payload: EndpointPayloadMap[N], options?: CallOptions]
-): Promise<EndpointResultMap[N]> {
+): Promise<ApiResult<EndpointResultMap[N]>> {
   const payload = args[0] as EndpointPayloadMap[N] | undefined;
   const options = args[1] as CallOptions | undefined;
 
@@ -50,10 +50,18 @@ export async function apiCall<N extends EndpointName>(
 
   const body = response.data;
 
-  // Support both envelope `{ success, data }` and raw data responses
+  // Envelope: { success, message, data }
   if (body && typeof body === 'object' && 'data' in body && 'success' in body) {
-    return (body as ApiResponse<EndpointResultMap[N]>).data;
+    const envelope = body as ApiResponse<EndpointResultMap[N]>;
+    return {
+      data: envelope.data,
+      message: envelope.message ?? extractMessage(envelope.data),
+    };
   }
 
-  return body as EndpointResultMap[N];
+  // Flat response: { message } or { accessToken, ... } etc.
+  return {
+    data: body as EndpointResultMap[N],
+    message: extractMessage(body),
+  };
 }
