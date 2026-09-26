@@ -32,7 +32,7 @@ export const auth = {
   /** POST /api/v1/auth/forget-passwod (backend typo — keep as-is) */
   forgotPassword: {
     method: "POST",
-    path: "/forget-passwod",
+    path: "/forgot-password",
     auth: false,
   },
   /** POST /api/v1/auth/reset-password */
