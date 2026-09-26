@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { validateEmail, validatePassword } from '../../utils/validations';
+import { useState } from 'react';
+import { XStack, YStack } from 'tamagui';
+import { Button, Caption, TextField } from '@/components/ui';
+import { validateEmail, validatePassword } from '@/utils/validations';
 
-interface LoginFormProps {
+export type LoginFormProps = {
   onSubmit: (email: string, password: string) => void;
-  isLoading: boolean;
-}
+  isLoading?: boolean;
+};
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading }) => {
+export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -29,91 +30,57 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading }) => 
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={[styles.input, errors.email ? styles.inputError : null]}
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (errors.email) setErrors({ ...errors, email: undefined });
-          }}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-      </View>
+    <YStack gap="$4" width="100%">
+      <TextField
+        label="Email"
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+          if (errors.email) setErrors((e) => ({ ...e, email: undefined }));
+        }}
+        placeholder="you@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete="email"
+        textContentType="emailAddress"
+        returnKeyType="next"
+        error={errors.email}
+      />
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={[styles.input, errors.password ? styles.inputError : null]}
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            if (errors.password) setErrors({ ...errors, password: undefined });
-          }}
-          placeholder="Enter your password"
-          secureTextEntry
-        />
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-      </View>
+      <TextField
+        label="Password"
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+          if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
+        }}
+        placeholder="Enter your password"
+        secureTextEntry
+        autoCapitalize="none"
+        autoComplete="password"
+        textContentType="password"
+        returnKeyType="go"
+        onSubmitEditing={handleSubmit}
+        error={errors.password}
+      />
 
-      <TouchableOpacity
-        style={[styles.button, isLoading ? styles.buttonDisabled : null]}
+      <XStack justifyContent="flex-end" marginTop="$-2">
+        <Caption color="$primary" fontWeight="500">
+          Forgot password?
+        </Caption>
+      </XStack>
+
+      <Button
+        intent="primary"
+        fullWidth
+        size="$5"
+        loading={isLoading}
         onPress={handleSubmit}
-        disabled={isLoading}
+        marginTop="$2"
       >
-        <Text style={styles.buttonText}>{isLoading ? 'Logging in...' : 'Login'}</Text>
-      </TouchableOpacity>
-    </View>
+        Sign in
+      </Button>
+    </YStack>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    marginBottom: 5,
-    fontSize: 16,
-    color: '#333',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  inputError: {
-    borderColor: 'red',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonDisabled: {
-    backgroundColor: '#99c9ff',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
+}

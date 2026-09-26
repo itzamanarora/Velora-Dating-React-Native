@@ -1,14 +1,15 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
-
-import { Colors } from '@/constants/theme';
+import { useTheme as useTamaguiTheme } from 'tamagui';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+/**
+ * App theme access — wraps Tamagui's useTheme with the active color scheme.
+ */
 export function useTheme() {
   const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
+  const theme = useTamaguiTheme();
 
-  return Colors[theme];
+  return {
+    scheme: scheme === 'unspecified' ? 'light' : scheme,
+    ...theme,
+  };
 }
