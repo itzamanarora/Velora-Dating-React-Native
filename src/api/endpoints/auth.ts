@@ -51,7 +51,7 @@ export const auth = {
   logout: {
     method: "POST",
     path: "/signout",
-    auth: false,
+    auth: true,
   },
 } as const satisfies Record<string, EndpointDef>;
 

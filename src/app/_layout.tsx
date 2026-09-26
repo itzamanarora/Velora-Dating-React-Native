@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { Provider } from 'react-redux';
 import Toast from 'react-native-toast-message';
+import { toastConfig } from '@/components/ui/ToastConfig';
 import { TamaguiProvider, Theme } from 'tamagui';
 import tamaguiConfig from '../../tamagui.config';
 import { store } from '../store';
@@ -45,7 +46,7 @@ export default function RootLayout() {
             <Stack.Screen name="auth/reset-password" />
             <Stack.Screen name="auth/verify-email" />
           </Stack>
-          <Toast />
+          <Toast config={toastConfig} visibilityTime={3000} topOffset={50} />
         </Theme>
       </TamaguiProvider>
     </Provider>
