@@ -1,18 +1,19 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
+import { Provider } from 'react-redux';
+import { TamaguiProvider, Theme } from 'tamagui';
+import tamaguiConfig from '../../tamagui.config';
+import { store } from '../store';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <Provider store={store}>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme='light'>
+        <Theme name="light">
+          <Stack>
+            <Stack.Screen name="index" options={{ title: 'Home' }} />
+          </Stack>
+        </Theme>
+      </TamaguiProvider>
+    </Provider>
   );
 }
