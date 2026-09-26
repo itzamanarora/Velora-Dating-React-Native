@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
+
 import Animated, {
+  FadeIn,
   FadeInDown,
   FadeInUp,
-  FadeIn,
   type BaseAnimationBuilder,
   type EntryExitAnimationFunction,
 } from 'react-native-reanimated';
+
 import { YStack, type GetProps } from 'tamagui';
 
 type Entering =
@@ -18,10 +20,13 @@ type YStackProps = GetProps<typeof YStack>;
 
 export type FadeInViewProps = YStackProps & {
   children: ReactNode;
+
   /** Stagger delay in ms */
   delay?: number;
+
   /** Entrance direction */
   from?: 'up' | 'down' | 'none';
+
   duration?: number;
 };
 
@@ -34,7 +39,12 @@ function getEntering(
 ): Entering {
   const base =
     from === 'up' ? FadeInUp : from === 'down' ? FadeInDown : FadeIn;
-  return base.delay(delay).duration(duration).springify().damping(16);
+
+  return base
+    .delay(delay)
+    .duration(duration)
+    .springify()
+    .damping(16);
 }
 
 /**
@@ -49,7 +59,10 @@ export function FadeInView({
   ...props
 }: FadeInViewProps) {
   return (
-    <AnimatedYStack entering={getEntering(from, delay, duration)} {...props}>
+    <AnimatedYStack
+      entering={getEntering(from, delay, duration)}
+      {...props}
+    >
       {children}
     </AnimatedYStack>
   );
