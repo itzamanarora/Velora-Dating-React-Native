@@ -1,14 +1,14 @@
+import { api, ApiError, apiToastMessage } from '@/api';
 import { SetupShell } from '@/components/setup/SetupShell';
 import { Caption, GradientButton } from '@/components/ui';
-import { api, ApiError, apiToastMessage } from '@/api';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   buildDateOfBirth,
   resetProfileSetup,
   setPhoto,
 } from '@/store/slices/profileSetupSlice';
-import { Image } from 'expo-image';
 import * as FileSystem from 'expo-file-system/legacy';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -123,6 +123,20 @@ export default function SetupPhotoScreen() {
     }
   };
 
+    const handleSignOut = async () => {
+      try {
+        const refreshToken = api.getRefreshToken();
+        if (refreshToken) {
+          await api.call('auth.logout', { refreshToken });
+        }
+      } catch {
+        // still clear local session
+      } finally {
+        api.clearTokens();
+        router.replace('/get-started');
+      }
+    };
+
   return (
     <SetupShell
       step={4}
@@ -190,6 +204,11 @@ export default function SetupPhotoScreen() {
           )}
         </YStack>
       </YStack>
+        <Pressable onPress={handleSignOut} hitSlop={10}>
+            <Text color="#E8446D" fontWeight="600" fontSize={14}>
+              Sign out
+            </Text>
+          </Pressable>
     </SetupShell>
   );
 }

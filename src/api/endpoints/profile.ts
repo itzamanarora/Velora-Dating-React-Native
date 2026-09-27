@@ -17,7 +17,7 @@ export const profile = {
     path: '/me',
     auth: true,
   },
-  /** GET /api/v1/profiles — list all profiles */
+  /** GET /api/v1/profiles — list profiles (page, pageSize, sortBy, search) */
   list: {
     method: 'GET',
     path: '',
@@ -48,6 +48,22 @@ export type CreateProfilePayload = {
   profilePictureUrl: string;
 };
 
+/** Query params for GET /api/v1/profiles */
+export type ProfileListParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  search?: string;
+};
+
+export type ProfileListResponse = {
+  results: UserProfile[];
+  page: number;
+  pageSize: number;
+  count: number;
+  totalPages: number;
+};
+
 export type ProfilePayloads = {
   createMe: CreateProfilePayload;
   getMe: void;
@@ -57,5 +73,5 @@ export type ProfilePayloads = {
 export type ProfileResults = {
   createMe: UserProfile;
   getMe: UserProfile;
-  list: UserProfile[];
+  list: ProfileListResponse;
 };
