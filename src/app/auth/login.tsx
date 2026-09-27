@@ -26,9 +26,13 @@ export default function LoginScreen() {
         text2: message?.trim() || 'You are signed in',
       });
 
-      setTimeout(() => {
-        router.replace('/welcome');
-      }, 500);
+      // New accounts go through setup; returning users with a profile skip to home
+      try {
+        await api.call('profile.getMe');
+        router.replace('/home');
+      } catch {
+        router.replace('/setup/name');
+      }
     } catch (err) {
       const errorMsg = err instanceof ApiError ? err.message : (err as any)?.message || '';
       const isEmailUnverified =

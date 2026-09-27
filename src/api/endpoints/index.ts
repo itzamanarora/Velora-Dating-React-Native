@@ -12,7 +12,7 @@ export const modules = {
     endpoints: auth,
   },
   profile: {
-    base: '/profile',
+    base: '/profiles',
     endpoints: profile,
   },
 } as const;

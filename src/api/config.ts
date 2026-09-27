@@ -6,7 +6,7 @@
  */
 export const API_CONFIG = {
   /** Root server URL — no trailing slash */
-  baseURL: "https://api.trivor.shop/",
+  baseURL: "https://api.trivor.shop",
 
   /** All routes mount under this prefix */
   prefix: "/api/v1",

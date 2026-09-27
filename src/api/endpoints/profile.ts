@@ -1,47 +1,61 @@
 import type { EndpointDef } from '../types';
 
 /**
- * /api/v1/profile/*
+ * /api/v1/profiles/*
+ * Matches Swagger: POST /profiles/me, GET /profiles
  */
 export const profile = {
-  /** GET /api/v1/profile */
-  get: {
+  /** POST /api/v1/profiles/me — create / update own profile */
+  createMe: {
+    method: 'POST',
+    path: '/me',
+    auth: true,
+  },
+  /** GET /api/v1/profiles/me — current user profile (if available) */
+  getMe: {
+    method: 'GET',
+    path: '/me',
+    auth: true,
+  },
+  /** GET /api/v1/profiles — list all profiles */
+  list: {
     method: 'GET',
     path: '',
-    auth: true,
-  },
-  /** PUT /api/v1/profile */
-  update: {
-    method: 'PUT',
-    path: '',
-    auth: true,
-  },
-  /** PATCH /api/v1/profile/avatar */
-  updateAvatar: {
-    method: 'PATCH',
-    path: '/avatar',
     auth: true,
   },
 } as const satisfies Record<string, EndpointDef>;
 
 export type ProfileEndpoint = keyof typeof profile;
 
-export type Profile = {
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
+
+export type UserProfile = {
   id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string | null;
-  phone?: string | null;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: Gender | string;
+  profilePictureUrl: string;
+  createdAt: string;
+};
+
+export type CreateProfilePayload = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+  profilePictureUrl: string;
 };
 
 export type ProfilePayloads = {
-  get: void;
-  update: Partial<Pick<Profile, 'name' | 'phone' | 'avatarUrl'>>;
-  updateAvatar: { avatarUrl: string };
+  createMe: CreateProfilePayload;
+  getMe: void;
+  list: void;
 };
 
 export type ProfileResults = {
-  get: Profile;
-  update: Profile;
-  updateAvatar: Profile;
+  createMe: UserProfile;
+  getMe: UserProfile;
+  list: UserProfile[];
 };

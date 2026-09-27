@@ -57,7 +57,7 @@ export type {
   EndpointResultMap,
 } from './endpoints';
 export type { AuthPayloads, AuthResults, AuthTokens } from './endpoints/auth';
-export type { Profile, ProfilePayloads, ProfileResults } from './endpoints/profile';
+export type { UserProfile, ProfilePayloads, ProfileResults, CreateProfilePayload, Gender } from './endpoints/profile';
 export type { ApiResponse, ApiErrorBody, ApiResult } from './types';
 
 export default api;
