@@ -7,103 +7,49 @@ import { useState } from 'react';
 import Toast from 'react-native-toast-message';
 
 export default function SignUpScreen() {
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isResending, setIsResending] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleVerify = async (email: string, password: string) => {
-    setIsVerifying(true);
+  const handleSubmit = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
       const { data, message } = await api.call('auth.signup', { email, password });
 
       Toast.show({
         type: 'success',
-        text1: 'OTP sent',
-        text2: apiToastMessage(message || data.message),
+        text1: 'Check your email',
+        text2: apiToastMessage(message || data.message || 'We sent a 6-digit verification code.'),
       });
 
-      return true;
+      router.push({
+        pathname: '/auth/otp',
+        params: { email, purpose: 'signup' },
+      });
     } catch (err) {
       Toast.show({
         type: 'error',
         text1: 'Signup failed',
         text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
       });
-      return false;
     } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  const handleConfirm = async (email: string, otp: string) => {
-    setIsConfirming(true);
-    try {
-      const { data, message } = await api.call('auth.verifyOtp', { email, otp });
-
-      Toast.show({
-        type: 'success',
-        text1: 'Verified',
-        text2: apiToastMessage(message || data.message),
-      });
-
-      setTimeout(() => {
-        router.replace('/auth/login');
-      }, 900);
-    } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: 'OTP failed',
-        text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
-      });
-    } finally {
-      setIsConfirming(false);
-    }
-  };
-
-  const handleResend = async (email: string) => {
-    setIsResending(true);
-    try {
-      const { data, message } = await api.call('auth.resendOtp', { email });
-
-      Toast.show({
-        type: 'success',
-        text1: 'OTP resent',
-        text2: apiToastMessage(message || data.message),
-      });
-    } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: 'Resend failed',
-        text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
-      });
-    } finally {
-      setIsResending(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <AuthScreenShell
-      variant="signup"
-      title="Join Velora"
-      subtitle="Create an account and start meeting people"
+      title="Create your account"
+      subtitle="Join Velora and start meeting people"
       footer={
-        <Caption>
+        <Caption color="#756A6D">
           Already have an account?{' '}
-          <Caption color="$primary" fontWeight="600" onPress={() => router.push('/auth/login')}>
+          <Caption color="#E8446D" fontWeight="600" onPress={() => router.push('/auth/login')}>
             Sign in
           </Caption>
         </Caption>
       }
     >
-      <SignupForm
-        onVerify={handleVerify}
-        onConfirm={handleConfirm}
-        onResend={handleResend}
-        isVerifying={isVerifying}
-        isConfirming={isConfirming}
-        isResending={isResending}
-      />
+      <SignupForm onSubmit={handleSubmit} isLoading={isLoading} />
     </AuthScreenShell>
   );
 }

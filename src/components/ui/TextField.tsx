@@ -26,7 +26,7 @@ export function TextField({
   return (
     <YStack gap="$1.5" width="100%">
       {label ? (
-        <Label htmlFor={fieldId} fontSize="$4" fontWeight="500" color="$color" opacity={0.85}>
+        <Label htmlFor={fieldId} fontSize="$4" fontWeight="500" color="#0F1824" opacity={0.9}>
           {label}
         </Label>
       ) : null}

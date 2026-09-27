@@ -1,11 +1,10 @@
 import { api } from '@/api';
 import {
-  AuthAtmosphere,
+  AppLogo,
   Body,
-  BrandMark,
   Button,
   FadeInView,
-  GlassPanel,
+  GradientButton,
   Heading,
   Screen,
 } from '@/components/ui';
@@ -13,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';
-import { Text as TText, XStack, YStack } from 'tamagui';
+import { XStack, YStack } from 'tamagui';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -38,7 +37,6 @@ export default function WelcomeScreen() {
         refreshToken,
       });
 
-      // Only clear tokens AFTER successful API response
       api.clearTokens();
 
       Toast.show({
@@ -47,33 +45,26 @@ export default function WelcomeScreen() {
         text2: 'You have been signed out successfully.',
       });
 
-      router.replace('/auth/login');
-
+      router.replace('/get-started');
     } catch (error) {
       console.error('Logout API failed:', error);
-
-      // DO NOT clear tokens here
 
       Toast.show({
         type: 'error',
         text1: 'Sign Out Failed',
         text2: 'Unable to sign out. Please try again.',
       });
-
     } finally {
       setIsSigningOut(false);
     }
   };
 
   const handleRefresh = async () => {
-    // Simulate refresh — replace with real data fetch when ready
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 800));
   };
 
   return (
-    <Screen scroll backgroundColor="$background" paddingHorizontal="$5" onRefresh={handleRefresh}>
-      <AuthAtmosphere variant="login" />
-
+    <Screen scroll backgroundColor="#FFFFFF" paddingHorizontal="$5" onRefresh={handleRefresh}>
       <YStack
         f={1}
         justifyContent="center"
@@ -83,114 +74,101 @@ export default function WelcomeScreen() {
         alignSelf="center"
         paddingVertical="$6"
       >
-        <FadeInView delay={0} from="down" alignItems="center" gap="$3">
-          <BrandMark sizeVariant="lg">
-            <TText color="$primaryText" fontSize={36} fontWeight="800" letterSpacing={-1}>
-              V
-            </TText>
-          </BrandMark>
+        <FadeInView delay={0} from="none" alignItems="center" gap="$3">
+          <AppLogo size={72} nameColor="#0F1824" />
 
           <YStack alignItems="center" gap="$1.5" paddingHorizontal="$2">
-            <Heading level={1} color="$color" textAlign="center" fontSize={28}>
-              Welcome to Velora! 💕
+            <Heading level={1} color="#0F1824" textAlign="center" fontSize={26}>
+              Welcome to Velora
             </Heading>
-            <Body color="$muted" textAlign="center" fontSize={16}>
+            <Body color="#756A6D" textAlign="center" fontSize={15}>
               You have successfully signed in to your account.
             </Body>
           </YStack>
         </FadeInView>
 
-        <FadeInView delay={120} from="up">
-          <GlassPanel intensity={0.82} borderRadius={28} padding={24}>
-            <YStack gap="$4">
-              <YStack gap="$3">
-                <XStack
-                  alignItems="center"
-                  gap="$3"
-                  padding="$3"
-                  backgroundColor="rgba(255,255,255,0.7)"
-                  borderRadius={16}
-                  borderWidth={1}
-                  borderColor="rgba(232,68,109,0.12)"
-                >
-                  <YStack
-                    width={44}
-                    height={44}
-                    borderRadius={22}
-                    backgroundColor="$brand100"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Ionicons name="heart" size={22} color="#E8446D" />
-                  </YStack>
-                  <YStack f={1}>
-                    <Heading level={4} fontSize={16} fontWeight="700">
-                      Discover Matches
-                    </Heading>
-                    <Body color="$muted" fontSize={13}>
-                      Explore genuine profiles curated for you.
-                    </Body>
-                  </YStack>
-                </XStack>
-
-                <XStack
-                  alignItems="center"
-                  gap="$3"
-                  padding="$3"
-                  backgroundColor="rgba(255,255,255,0.7)"
-                  borderRadius={16}
-                  borderWidth={1}
-                  borderColor="rgba(232,68,109,0.12)"
-                >
-                  <YStack
-                    width={44}
-                    height={44}
-                    borderRadius={22}
-                    backgroundColor="$brand100"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Ionicons name="chatbubble-ellipses" size={22} color="#E8446D" />
-                  </YStack>
-                  <YStack f={1}>
-                    <Heading level={4} fontSize={16} fontWeight="700">
-                      Real-Time Chat
-                    </Heading>
-                    <Body color="$muted" fontSize={13}>
-                      Start engaging conversations instantly.
-                    </Body>
-                  </YStack>
-                </XStack>
-              </YStack>
-
-              <YStack gap="$3" marginTop="$2">
-                <Button
-                  intent="primary"
-                  fullWidth
-                  size="$5"
-                  onPress={() => {
-                    Toast.show({
-                      type: 'success',
-                      text1: 'Velora Active',
-                      text2: 'Welcome to Velora! Find your perfect match today. 💕',
-                    });
-                  }}
-                >
-                  Get Started
-                </Button>
-
-                <Button
-                  intent="ghost"
-                  fullWidth
-                  size="$4"
-                  loading={isSigningOut}
-                  onPress={handleSignOut}
-                >
-                  Sign Out
-                </Button>
-              </YStack>
+        <FadeInView delay={40} from="none" gap="$3">
+          <XStack
+            alignItems="center"
+            gap="$3"
+            padding="$3.5"
+            backgroundColor="#FFF5F7"
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="#FFCCD5"
+          >
+            <YStack
+              width={44}
+              height={44}
+              borderRadius={22}
+              backgroundColor="#FFE0E8"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Ionicons name="heart" size={22} color="#E8446D" />
             </YStack>
-          </GlassPanel>
+            <YStack f={1}>
+              <Heading level={4} fontSize={16} fontWeight="700" color="#0F1824">
+                Discover Matches
+              </Heading>
+              <Body color="#756A6D" fontSize={13}>
+                Explore genuine profiles curated for you.
+              </Body>
+            </YStack>
+          </XStack>
+
+          <XStack
+            alignItems="center"
+            gap="$3"
+            padding="$3.5"
+            backgroundColor="#FFF5F7"
+            borderRadius={16}
+            borderWidth={1}
+            borderColor="#FFCCD5"
+          >
+            <YStack
+              width={44}
+              height={44}
+              borderRadius={22}
+              backgroundColor="#FFE0E8"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Ionicons name="chatbubble-ellipses" size={22} color="#E8446D" />
+            </YStack>
+            <YStack f={1}>
+              <Heading level={4} fontSize={16} fontWeight="700" color="#0F1824">
+                Real-Time Chat
+              </Heading>
+              <Body color="#756A6D" fontSize={13}>
+                Start engaging conversations instantly.
+              </Body>
+            </YStack>
+          </XStack>
+
+          <YStack gap="$3" marginTop="$2">
+            <GradientButton
+              onPress={() => {
+                Toast.show({
+                  type: 'success',
+                  text1: 'Velora Active',
+                  text2: 'Welcome to Velora! Find your perfect match today.',
+                });
+              }}
+            >
+              Continue
+            </GradientButton>
+
+            <Button
+              intent="ghost"
+              fullWidth
+              size="$4"
+              loading={isSigningOut}
+              onPress={handleSignOut}
+            >
+              Sign Out
+            </Button>
+          </YStack>
         </FadeInView>
       </YStack>
     </Screen>

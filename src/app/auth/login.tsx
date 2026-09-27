@@ -28,7 +28,7 @@ export default function LoginScreen() {
 
       setTimeout(() => {
         router.replace('/welcome');
-      }, 800);
+      }, 500);
     } catch (err) {
       const errorMsg = err instanceof ApiError ? err.message : (err as any)?.message || '';
       const isEmailUnverified =
@@ -39,12 +39,12 @@ export default function LoginScreen() {
       if (isEmailUnverified) {
         Toast.show({
           type: 'info',
-          text1: 'Email Verification Required',
+          text1: 'Email verification required',
           text2: apiToastMessage(errorMsg) || 'Please verify your email before logging in.',
         });
         router.push({
-          pathname: '/auth/verify-email',
-          params: { email, autoResend: 'true' },
+          pathname: '/auth/otp',
+          params: { email, purpose: 'verify', autoResend: 'true' },
         });
         return;
       }
@@ -61,13 +61,13 @@ export default function LoginScreen() {
 
   return (
     <AuthScreenShell
-      variant="login"
-      title="Welcome back"
-      subtitle="Sign in and pick up your conversations"
+      layout="split"
+      title="Let's start with Log In"
+      subtitle="Sign in to continue your Velora journey"
       footer={
-        <Caption>
+        <Caption color="#756A6D">
           New here?{' '}
-          <Caption color="$primary" fontWeight="600" onPress={() => router.push('/auth/signup')}>
+          <Caption color="#E8446D" fontWeight="600" onPress={() => router.push('/auth/signup')}>
             Create an account
           </Caption>
         </Caption>

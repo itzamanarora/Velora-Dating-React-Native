@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { XStack, YStack } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
-import { Button, Caption, TextField } from '@/components/ui';
+import { Caption, GradientButton, TextField } from '@/components/ui';
 import { validateEmail, validatePassword } from '@/utils/validations';
 
 export type LoginFormProps = {
@@ -35,6 +35,10 @@ export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: Log
 
   return (
     <YStack gap="$4" width="100%">
+      <Caption color="#756A6D" textAlign="center">
+        Welcome back — sign in with your email and password to continue.
+      </Caption>
+
       <TextField
         label="Email"
         value={email}
@@ -76,29 +80,21 @@ export function LoginForm({ onSubmit, onForgotPassword, isLoading = false }: Log
             <Ionicons
               name={showPassword ? 'eye-outline' : 'eye-off-outline'}
               size={22}
-              color="rgba(155,138,142,0.7)"
+              color="#9B8A8E"
             />
           </TouchableOpacity>
         }
       />
 
       <XStack justifyContent="flex-end" marginTop="$-2">
-        <Caption color="$primary" fontWeight="600" onPress={onForgotPassword}>
+        <Caption color="#E8446D" fontWeight="600" onPress={onForgotPassword}>
           Forgot password?
         </Caption>
       </XStack>
 
-      <Button
-        intent="primary"
-        fullWidth
-        size="$5"
-        loading={isLoading}
-        onPress={handleSubmit}
-        marginTop="$1"
-      >
+      <GradientButton loading={isLoading} onPress={handleSubmit}>
         Sign in
-      </Button>
+      </GradientButton>
     </YStack>
   );
 }
-

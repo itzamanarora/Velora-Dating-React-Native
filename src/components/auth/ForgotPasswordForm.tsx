@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { YStack } from 'tamagui';
-import { Button, TextField } from '@/components/ui';
+import { Caption, GradientButton, TextField } from '@/components/ui';
 import { validateEmail } from '@/utils/validations';
 
 export type ForgotPasswordFormProps = {
@@ -29,6 +29,10 @@ export function ForgotPasswordForm({
 
   return (
     <YStack gap="$4" width="100%">
+      <Caption color="#756A6D" textAlign="center">
+        Enter the email linked to your Velora account. We'll send a 6-digit reset code next.
+      </Caption>
+
       <TextField
         label="Email"
         value={email}
@@ -45,19 +49,12 @@ export function ForgotPasswordForm({
         returnKeyType="go"
         onSubmitEditing={handleSubmit}
         error={error}
-        hint="We'll send a one-time code to this email"
+        hint="Make sure you can access this inbox."
       />
 
-      <Button
-        intent="primary"
-        fullWidth
-        size="$5"
-        loading={isLoading}
-        onPress={handleSubmit}
-        marginTop="$2"
-      >
-        Send OTP
-      </Button>
+      <GradientButton loading={isLoading} onPress={handleSubmit}>
+        Send reset code
+      </GradientButton>
     </YStack>
   );
 }

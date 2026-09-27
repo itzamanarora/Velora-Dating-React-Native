@@ -18,15 +18,13 @@ export default function ForgotPasswordScreen() {
       Toast.show({
         type: 'success',
         text1: 'Check your email',
-        text2: apiToastMessage(message || data.message),
+        text2: apiToastMessage(message || data.message || 'We sent a 6-digit reset code.'),
       });
 
-      setTimeout(() => {
-        router.push({
-          pathname: '/auth/reset-password',
-          params: { email },
-        });
-      }, 700);
+      router.push({
+        pathname: '/auth/otp',
+        params: { email, purpose: 'reset' },
+      });
     } catch (err) {
       Toast.show({
         type: 'error',
@@ -40,13 +38,12 @@ export default function ForgotPasswordScreen() {
 
   return (
     <AuthScreenShell
-      variant="forgot"
       title="Forgot password?"
-      subtitle="Enter your email and we'll send a reset code"
+      subtitle="No worries — it happens to everyone"
       footer={
-        <Caption>
+        <Caption color="#756A6D">
           Remember it?{' '}
-          <Caption color="$primary" fontWeight="600" onPress={() => router.push('/auth/login')}>
+          <Caption color="#E8446D" fontWeight="600" onPress={() => router.push('/auth/login')}>
             Back to sign in
           </Caption>
         </Caption>

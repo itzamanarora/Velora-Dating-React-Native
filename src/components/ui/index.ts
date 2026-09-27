@@ -1,6 +1,9 @@
 export { Button, type ButtonProps } from './Button';
+export { GradientButton, type GradientButtonProps } from './GradientButton';
 export { Input, type InputProps } from './Input';
 export { TextField, type TextFieldProps } from './TextField';
+export { OtpInput, OTP_CODE_LENGTH, type OtpInputProps } from './OtpInput';
+export { AppLogo, type AppLogoProps } from './AppLogo';
 export {
   Text,
   Heading,

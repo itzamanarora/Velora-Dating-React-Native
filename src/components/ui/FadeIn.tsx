@@ -40,22 +40,19 @@ function getEntering(
   const base =
     from === 'up' ? FadeInUp : from === 'down' ? FadeInDown : FadeIn;
 
-  return base
-    .delay(delay)
-    .duration(duration)
-    .springify()
-    .damping(16);
+  // Soft timing only — no spring bounce
+  return base.delay(delay).duration(duration);
 }
 
 /**
  * Reusable entrance animation wrapper.
- * Use for staggered reveals on screens.
+ * Keep motion subtle — short fade, minimal travel.
  */
 export function FadeInView({
   children,
   delay = 0,
-  from = 'up',
-  duration = 520,
+  from = 'none',
+  duration = 280,
   ...props
 }: FadeInViewProps) {
   return (

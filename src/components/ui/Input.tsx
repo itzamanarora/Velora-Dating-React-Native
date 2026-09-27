@@ -2,22 +2,22 @@ import { Input as TInput, styled, type GetProps } from 'tamagui';
 
 export const Input = styled(TInput, {
   name: 'AppInput',
-  backgroundColor: 'rgba(255, 255, 255, 0.92)',
+  backgroundColor: '#FFFFFF',
   borderWidth: 1.5,
-  borderColor: '$borderColor',
+  borderColor: '#E5E5E5',
   borderRadius: '$5',
   height: '$4.5',
   paddingHorizontal: '$3.5',
   fontSize: '$5',
-  color: '$color',
+  color: '#0F1824',
   placeholderTextColor: '$placeholderColor',
   focusStyle: {
-    borderColor: '$borderColorFocus',
-    backgroundColor: '#FFFBFC',
+    borderColor: '#E8446D',
+    backgroundColor: '#FFFFFF',
     outlineWidth: 0,
   },
   hoverStyle: {
-    borderColor: '$borderColorHover',
+    borderColor: '#E8B4BE',
   },
   variants: {
     error: {

@@ -39,10 +39,13 @@ export default function RootLayout() {
           <StatusBar style="dark" />
           <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
             <Stack.Screen name="index" />
+            <Stack.Screen name="get-started" />
             <Stack.Screen name="welcome" />
             <Stack.Screen name="auth/login" />
             <Stack.Screen name="auth/signup" />
+            <Stack.Screen name="auth/otp" />
             <Stack.Screen name="auth/forgot-password" />
+            <Stack.Screen name="auth/new-password" />
             <Stack.Screen name="auth/reset-password" />
             <Stack.Screen name="auth/verify-email" />
           </Stack>
