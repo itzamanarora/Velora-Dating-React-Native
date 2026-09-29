@@ -1,4 +1,4 @@
-import type { EndpointDef } from '../types';
+import type { EndpointDef } from "../types";
 
 /**
  * /api/v1/profiles/*
@@ -7,27 +7,29 @@ import type { EndpointDef } from '../types';
 export const profile = {
   /** POST /api/v1/profiles/me — create / update own profile */
   createMe: {
-    method: 'POST',
-    path: '/me',
+    method: "POST",
+    path: "/me",
     auth: true,
   },
   /** GET /api/v1/profiles/me — current user profile (if available) */
   getMe: {
-    method: 'GET',
-    path: '/me',
+    method: "GET",
+    path: "/me",
     auth: true,
   },
   /** GET /api/v1/profiles — list profiles (page, pageSize, sortBy, search) */
   list: {
-    method: 'GET',
-    path: '',
+    method: "GET",
+    path: "",
     auth: true,
   },
 } as const satisfies Record<string, EndpointDef>;
 
 export type ProfileEndpoint = keyof typeof profile;
 
-export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
+export type Gender = "MALE" | "FEMALE" | "OTHER";
+
+export type PreferredGender = "MALE" | "FEMALE" | "OTHER";
 
 export type UserProfile = {
   id: string;
@@ -36,6 +38,8 @@ export type UserProfile = {
   lastName: string;
   dateOfBirth: string;
   gender: Gender | string;
+  preferredGender: PreferredGender | string;
+  bio: string;
   profilePictureUrl: string;
   createdAt: string;
 };
@@ -45,6 +49,8 @@ export type CreateProfilePayload = {
   lastName: string;
   dateOfBirth: string;
   gender: string;
+  preferredGender: string;
+  bio: string;
   profilePictureUrl: string;
 };
 

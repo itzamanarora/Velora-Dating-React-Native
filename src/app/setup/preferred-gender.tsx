@@ -1,50 +1,50 @@
-import type { Gender } from '@/api/endpoints/profile';
+import type { PreferredGender } from '@/api/endpoints/profile';
 import { SetupShell } from '@/components/setup/SetupShell';
 import { Caption, GradientButton } from '@/components/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setGender } from '@/store/slices/profileSetupSlice';
+import { setPreferredGender } from '@/store/slices/profileSetupSlice';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable } from 'react-native';
 import { Text, YStack } from 'tamagui';
 
-const OPTIONS: { value: Gender; label: string; hint: string }[] = [
-  { value: 'MALE', label: 'Male', hint: 'Identify as male' },
-  { value: 'FEMALE', label: 'Female', hint: 'Identify as female' },
-  { value: 'OTHER', label: 'Other', hint: 'Prefer to self-describe later' },
+const OPTIONS: { value: PreferredGender; label: string; hint: string }[] = [
+  { value: 'MALE', label: 'Men', hint: 'I’m interested in dating men' },
+  { value: 'FEMALE', label: 'Women', hint: 'I’m interested in dating women' },
+  { value: 'OTHER', label: 'Everyone', hint: 'I’m open to dating everyone' },
 ];
 
-export default function SetupGenderScreen() {
+export default function SetupPreferredGenderScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const draft = useAppSelector((s) => s.profileSetup);
-  const [gender, setLocalGender] = useState<Gender | ''>(draft.gender);
+  const [preferredGender, setLocalPreferredGender] = useState<PreferredGender | ''>(draft.preferredGender);
   const [error, setError] = useState<string | undefined>();
 
   const handleContinue = () => {
-    if (!gender) {
+    if (!preferredGender) {
       setError('Please select a gender to continue');
       return;
     }
     setError(undefined);
-    dispatch(setGender(gender));
-    router.push('/setup/preferred-gender');
+    dispatch(setPreferredGender(preferredGender));
+    router.push('/setup/bio');
   };
 
   return (
     <SetupShell
-      step={3}
-      title="How do you identify?"
-      subtitle="Pick the option that fits you best. You can update this later from settings."
+      step={4}
+      title="Who are you interested in?"
+      subtitle="Choose who you'd like to meet and date."
     >
       <YStack gap="$3" f={1}>
         {OPTIONS.map((opt) => {
-          const selected = gender === opt.value;
+          const selected = preferredGender === opt.value;
           return (
             <Pressable
               key={opt.value}
               onPress={() => {
-                setLocalGender(opt.value);
+                setLocalPreferredGender(opt.value);
                 if (error) setError(undefined);
               }}
               style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}

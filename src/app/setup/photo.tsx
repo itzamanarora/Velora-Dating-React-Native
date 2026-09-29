@@ -101,6 +101,8 @@ export default function SetupPhotoScreen() {
         lastName: draft.lastName,
         dateOfBirth: buildDateOfBirth(draft),
         gender: draft.gender,
+        preferredGender: draft.preferredGender,
+        bio: draft.bio,
         profilePictureUrl,
       });
 
@@ -123,23 +125,9 @@ export default function SetupPhotoScreen() {
     }
   };
 
-    const handleSignOut = async () => {
-      try {
-        const refreshToken = api.getRefreshToken();
-        if (refreshToken) {
-          await api.call('auth.logout', { refreshToken });
-        }
-      } catch {
-        // still clear local session
-      } finally {
-        api.clearTokens();
-        router.replace('/get-started');
-      }
-    };
-
   return (
     <SetupShell
-      step={4}
+      step={6}
       title="Add a profile photo"
       subtitle="A clear face photo gets better matches. Pick your best shot — you can change it later."
     >
@@ -204,11 +192,6 @@ export default function SetupPhotoScreen() {
           )}
         </YStack>
       </YStack>
-        <Pressable onPress={handleSignOut} hitSlop={10}>
-            <Text color="#E8446D" fontWeight="600" fontSize={14}>
-              Sign out
-            </Text>
-          </Pressable>
     </SetupShell>
   );
 }

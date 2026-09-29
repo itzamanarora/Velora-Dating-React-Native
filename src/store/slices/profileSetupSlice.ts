@@ -1,5 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Gender } from '@/api/endpoints/profile';
+import type { Gender, PreferredGender } from "@/api/endpoints/profile";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export type ProfileDraft = {
   firstName: string;
@@ -7,36 +7,47 @@ export type ProfileDraft = {
   year: string;
   month: string;
   day: string;
-  gender: Gender | '';
+  gender: Gender | "";
+  preferredGender: PreferredGender | "";
+  bio: string;
   profilePictureUri: string;
   profilePictureUrl: string;
 };
 
 const initialState: ProfileDraft = {
-  firstName: '',
-  lastName: '',
-  year: '',
-  month: '',
-  day: '',
-  gender: '',
-  profilePictureUri: '',
-  profilePictureUrl: '',
+  firstName: "",
+  lastName: "",
+  year: "",
+  month: "",
+  day: "",
+  gender: "",
+  preferredGender: "",
+  bio: "",
+  profilePictureUri: "",
+  profilePictureUrl: "",
 };
 
 const profileSetupSlice = createSlice({
-  name: 'profileSetup',
+  name: "profileSetup",
   initialState,
   reducers: {
     setName(
       state,
-      action: PayloadAction<{ firstName: string; lastName: string }>,
+      action: PayloadAction<{
+        firstName: string;
+        lastName: string;
+      }>,
     ) {
       state.firstName = action.payload.firstName;
       state.lastName = action.payload.lastName;
     },
     setDob(
       state,
-      action: PayloadAction<{ year: string; month: string; day: string }>,
+      action: PayloadAction<{
+        year: string;
+        month: string;
+        day: string;
+      }>,
     ) {
       state.year = action.payload.year;
       state.month = action.payload.month;
@@ -45,9 +56,18 @@ const profileSetupSlice = createSlice({
     setGender(state, action: PayloadAction<Gender>) {
       state.gender = action.payload;
     },
+    setPreferredGender(state, action: PayloadAction<PreferredGender>) {
+      state.preferredGender = action.payload;
+    },
+    setBio(state, action: PayloadAction<string>) {
+      state.bio = action.payload;
+    },
     setPhoto(
       state,
-      action: PayloadAction<{ uri: string; url?: string }>,
+      action: PayloadAction<{
+        uri: string;
+        url?: string;
+      }>,
     ) {
       state.profilePictureUri = action.payload.uri;
       state.profilePictureUrl = action.payload.url ?? action.payload.uri;
@@ -58,13 +78,21 @@ const profileSetupSlice = createSlice({
   },
 });
 
-export const { setName, setDob, setGender, setPhoto, resetProfileSetup } =
-  profileSetupSlice.actions;
+export const {
+  setName,
+  setDob,
+  setGender,
+  setPreferredGender,
+  setBio,
+  setPhoto,
+  resetProfileSetup,
+} = profileSetupSlice.actions;
 
 export function buildDateOfBirth(draft: ProfileDraft): string {
-  const y = draft.year.padStart(4, '0');
-  const m = draft.month.padStart(2, '0');
-  const d = draft.day.padStart(2, '0');
+  const y = draft.year.padStart(4, "0");
+  const m = draft.month.padStart(2, "0");
+  const d = draft.day.padStart(2, "0");
+
   return `${y}-${m}-${d}`;
 }
 

@@ -1,20 +1,20 @@
+import { Body, FadeInView, Heading, Screen } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, XStack, YStack } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { Body, FadeInView, Heading, Screen } from '@/components/ui';
 
 export type SetupShellProps = {
-  step: 1 | 2 | 3 | 4;
+  step: 1 | 2 | 3 | 4 | 5 | 6 ;
   title: string;
   subtitle: string;
   children: ReactNode;
   showBack?: boolean;
 };
 
-const STEP_LABELS = ['Name', 'Birthday', 'Gender', 'Photo'] as const;
+const STEP_LABELS = ['Name', 'Birthday', 'Gender', 'Preference', 'Bio', 'Photo'] as const;
 
 /** Shared layout for the 4-step profile setup. */
 export function SetupShell({
@@ -97,7 +97,7 @@ export function SetupShell({
           textAlign="center"
           marginBottom={insets.bottom > 0 ? 0 : '$2'}
         >
-          Step {step} of 4 — this helps others find the real you.
+          Step {step} of 6 — this helps others find the real you.
         </Text>
       </YStack>
     </Screen>
