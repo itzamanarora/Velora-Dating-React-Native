@@ -60,6 +60,7 @@ export type ProfileListParams = {
   pageSize?: number;
   sortBy?: string;
   search?: string;
+  genderPreferred?: string;
 };
 
 export type ProfileListResponse = {

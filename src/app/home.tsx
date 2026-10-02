@@ -1,13 +1,13 @@
 import { api, ApiError, apiToastMessage } from '@/api';
-import type { UserProfile } from '@/api/endpoints/profile';
+import type { Gender, UserProfile } from '@/api/endpoints/profile';
 import {
   Body,
   Caption,
   GradientButton,
   Heading,
-  Screen
+  Screen,
+  BrandMark
 } from '@/components/ui';
-import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
@@ -16,14 +16,20 @@ import {
   Dimensions,
   PanResponder,
   Pressable,
-  StyleSheet
+  StyleSheet,
+  View,
+  Modal,
 } from 'react-native';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setUser } from '@/store/slices/appSlice';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { Text, XStack, YStack } from 'tamagui';
 
 const PAGE_SIZE = 10;
-const DEFAULT_SORT = 'createdAt';
+const DEFAULT_SORT = 'lastActiveAt';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.25;
@@ -133,12 +139,12 @@ function SwipeCard({
 
   const cardStyle = isTop
     ? {
-        transform: [
-          { translateX: position.x },
-          { translateY: position.y },
-          { rotate },
-        ],
-      }
+      transform: [
+        { translateX: position.x },
+        { translateY: position.y },
+        { rotate },
+      ],
+    }
     : { transform: [{ scale: 0.95 }], opacity: 0.85 };
 
   return (
@@ -222,6 +228,8 @@ function SwipeCard({
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const dispatch = useAppDispatch();
+  const myProfile = useAppSelector((state) => state.app.user);
 
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -236,12 +244,30 @@ export default function HomeScreen() {
       if (mode === 'refresh') setRefreshing(true);
       else setLoading(true);
       try {
-        const { data } = await api.call('profile.list', undefined, {
-          params: { page: pageToLoad, pageSize: PAGE_SIZE, sortBy: DEFAULT_SORT },
-        });
+        const { data: myProfile } = await api.call(
+          'profile.getMe',
+          undefined,
+        );
+        dispatch(setUser(myProfile));
+
+        const genderPreferred = myProfile.preferredGender as Gender;
+        const { data } = await api.call(
+          'profile.list',
+          undefined,
+          {
+            params: {
+              page: pageToLoad,
+              pageSize: PAGE_SIZE,
+              sortBy: DEFAULT_SORT,
+              genderPreferred,
+            },
+          },
+        );
         const normalized = normalizeListResponse(data);
         setProfiles((prev) =>
-          mode === 'replace' ? normalized.results : [...prev, ...normalized.results],
+          mode === 'replace'
+            ? normalized.results
+            : [...prev, ...normalized.results],
         );
         setCurrentIndex(0);
         setPage(normalized.page);
@@ -251,7 +277,9 @@ export default function HomeScreen() {
         Toast.show({
           type: 'error',
           text1: 'Could not load profiles',
-          text2: apiToastMessage(err instanceof ApiError ? err.message : undefined),
+          text2: apiToastMessage(
+            err instanceof ApiError ? err.message : undefined,
+          ),
         });
       } finally {
         setLoading(false);
@@ -267,27 +295,49 @@ export default function HomeScreen() {
     }, [fetchPage]),
   );
 
-  const handleChat = () => {
-    const profile = profiles[currentIndex];
-    setCurrentIndex((prev) => prev + 1);
-    if (profile) {
-      // router.push(`/chat/${profile.id}`);
-    }
-  };
+  const [matchProfile, setMatchProfile] = useState<UserProfile | null>(null);
 
-  const handleNotInterested = () => {
+  const handleSwipe = async (type: 'LIKE' | 'DISLIKE') => {
+    const profile = profiles[currentIndex];
+    if (!profile) return;
+    
     setCurrentIndex((prev) => prev + 1);
+
     // Load more when running low
     if (currentIndex >= profiles.length - 3 && page + 1 < totalPages) {
       fetchPage(page + 1, 'replace');
     }
+
+    try {
+      const { data } = await api.call('swipe.createSwipe', {
+        swipeeId: profile.id,
+        swipeType: type,
+      });
+
+      if (data.match) {
+        setMatchProfile(profile);
+      }
+    } catch (e) {
+      console.error('Swipe API failed:', e);
+    }
   };
+
+  const handleChat = () => handleSwipe('LIKE');
+  const handleNotInterested = () => handleSwipe('DISLIKE');
 
   const handleSignOut = async () => {
     try {
       const refreshToken = api.getRefreshToken();
-      if (refreshToken) await api.call('auth.logout', { refreshToken });
-    } catch {}
+      console.log('Sending logout with refresh token:', refreshToken);
+      if (refreshToken) {
+        await api.call('auth.logout', { refreshToken });
+        console.log('Logout API call successful');
+      } else {
+        console.log('No refresh token found to send logout');
+      }
+    } catch (e) {
+      console.error('Logout API failed:', e);
+    }
     finally {
       api.clearTokens();
       router.replace('/get-started');
@@ -304,26 +354,47 @@ export default function HomeScreen() {
         {/* Header */}
         <XStack
           paddingHorizontal="$5"
+          paddingTop="$2"
           paddingBottom="$3"
           alignItems="center"
           justifyContent="space-between"
         >
-          <YStack gap="$1">
-            <XStack alignItems="center" gap="$2">
-              {/* <Text fontSize={28}>🔥</Text> */}
-              <Heading level={2} color="#0F1824" fontSize={26} fontWeight="800">
+          <XStack alignItems="center" gap="$3">
+            <BrandMark sizeVariant="sm">
+              <Text color="$primaryText" fontSize={22} fontWeight="800">
+                V
+              </Text>
+            </BrandMark>
+            <YStack>
+              <Heading level={2} color="#0F1824" fontSize={24} fontWeight="800">
                 Velora
               </Heading>
-            </XStack>
-            <Caption color="#756A6D">
-              {count > 0 ? `${count} people nearby` : 'Discover people'}
-            </Caption>
-          </YStack>
-          <Pressable onPress={handleSignOut} hitSlop={10}>
-            <Text color="#E8446D" fontWeight="600" fontSize={14}>
-              Sign out
-            </Text>
-          </Pressable>
+              <Caption color="#756A6D">
+                {count > 0 ? `${count} people nearby` : 'Discover people'}
+              </Caption>
+            </YStack>
+          </XStack>
+
+          <XStack alignItems="center" gap="$4">
+            <Pressable>
+              <YStack padding="$2" backgroundColor="#FFF0F3" borderRadius={20}>
+                <Ionicons name="options" size={22} color="#E8446D" />
+              </YStack>
+            </Pressable>
+            <Pressable onPress={() => router.push('/user')}>
+              <Image
+                source={{
+                  uri:
+                    myProfile?.profilePictureUrl ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      myProfile ? `${myProfile.firstName}+${myProfile.lastName}` : 'U'
+                    )}&background=E8446D&color=fff&size=100`,
+                }}
+                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#FFCCD5' }}
+                contentFit="cover"
+              />
+            </Pressable>
+          </XStack>
         </XStack>
 
         {/* Card Stack */}
@@ -367,6 +438,84 @@ export default function HomeScreen() {
           </YStack>
         )}
       </YStack>
+
+      {/* Bottom Navbar */}
+      <XStack
+        backgroundColor="#FFFFFF"
+        paddingTop="$3"
+        paddingBottom={insets.bottom > 0 ? insets.bottom : 20}
+        paddingHorizontal="$6"
+        justifyContent="space-between"
+        alignItems="center"
+        borderTopWidth={1}
+        borderTopColor="#F0D5DA"
+      >
+        <Pressable style={{ alignItems: 'center' }}>
+          <Ionicons name="flame" size={28} color="#E8446D" />
+        </Pressable>
+        <Pressable style={{ alignItems: 'center' }}>
+          <Ionicons name="grid" size={28} color="#9B8A8E" />
+        </Pressable>
+        <Pressable style={{ alignItems: 'center' }}>
+          <Ionicons name="sparkles" size={28} color="#9B8A8E" />
+        </Pressable>
+        <Pressable style={{ alignItems: 'center' }}>
+          <Ionicons name="chatbubbles" size={28} color="#9B8A8E" />
+        </Pressable>
+        <Pressable style={{ alignItems: 'center' }} onPress={() => router.push('/user')}>
+          <Ionicons name="person" size={28} color="#9B8A8E" />
+        </Pressable>
+      </XStack>
+
+      <Modal
+        visible={!!matchProfile}
+        transparent
+        animationType="fade"
+      >
+        <YStack
+          f={1}
+          backgroundColor="rgba(0,0,0,0.85)"
+          alignItems="center"
+          justifyContent="center"
+          padding="$6"
+        >
+          <Heading level={1} color="#E8446D" fontSize={42} fontWeight="900" textAlign="center" letterSpacing={1}>
+            It's a Match!
+          </Heading>
+          <Body color="#fff" fontSize={18} textAlign="center" marginTop="$4" marginBottom="$8">
+            You and {matchProfile?.firstName} liked each other.
+          </Body>
+          
+          <XStack gap="$4" marginBottom="$8">
+            <Image
+              source={{ uri: myProfile?.profilePictureUrl || `https://ui-avatars.com/api/?name=Me&background=E8446D&color=fff&size=200` }}
+              style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: '#fff' }}
+              contentFit="cover"
+            />
+            <Image
+              source={{ uri: matchProfile?.profilePictureUrl || `https://ui-avatars.com/api/?name=${matchProfile?.firstName}&background=E8446D&color=fff&size=200` }}
+              style={{ width: 100, height: 100, borderRadius: 50, borderWidth: 3, borderColor: '#fff' }}
+              contentFit="cover"
+            />
+          </XStack>
+
+          <GradientButton
+            style={{ width: '100%', marginBottom: 16 }}
+            onPress={() => {
+              setMatchProfile(null);
+              // router.push(`/chat/${matchProfile?.id}`);
+            }}
+          >
+            Send a Message
+          </GradientButton>
+          
+          <Pressable onPress={() => setMatchProfile(null)}>
+            <Text color="#fff" fontSize={16} fontWeight="600" opacity={0.8} padding="$3">
+              Keep Swiping
+            </Text>
+          </Pressable>
+        </YStack>
+      </Modal>
     </Screen>
   );
 }

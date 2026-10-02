@@ -9,7 +9,7 @@
 import { apiCall } from './call';
 import { API_CONFIG, apiRoot } from './config';
 import { http } from './client';
-import { modules, auth, profile } from './endpoints';
+import { modules, auth, profile, swipe } from './endpoints';
 import {
   loadTokens,
   setAccessToken,
@@ -27,7 +27,7 @@ export const api = {
   config: API_CONFIG,
   root: apiRoot,
   modules,
-  endpoints: { auth, profile },
+  endpoints: { auth, profile, swipe },
 
   loadTokens,
   setToken: setAccessToken,

@@ -32,7 +32,7 @@ export class ApiError extends Error {
   body?: ApiErrorBody;
 
   constructor(message: string, status: number, body?: ApiErrorBody) {
-    super(message);
+    super(typeof message === 'string' && message ? message : 'Unknown API Error');
     this.name = 'ApiError';
     this.status = status;
     this.body = body;
@@ -40,6 +40,9 @@ export class ApiError extends Error {
 }
 
 /** Prefer API message; fallback when backend sends nothing */
-export function apiToastMessage(message?: string | null) {
-  return message?.trim() || 'Something went wrong';
+export function apiToastMessage(message?: any) {
+  if (typeof message === 'string') {
+    return message.trim() || 'Something went wrong';
+  }
+  return 'Something went wrong';
 }

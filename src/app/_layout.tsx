@@ -41,6 +41,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="get-started" />
             <Stack.Screen name="home" />
+            <Stack.Screen name="user" />
             <Stack.Screen name="welcome" />
             <Stack.Screen name="setup/name" />
             <Stack.Screen name="setup/dob" />

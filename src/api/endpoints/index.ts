@@ -1,6 +1,22 @@
-import { auth, type AuthEndpoint, type AuthPayloads, type AuthResults } from './auth';
-import { profile, type ProfileEndpoint, type ProfilePayloads, type ProfileResults } from './profile';
-import type { EndpointDef } from '../types';
+import type { EndpointDef } from "../types";
+import {
+  auth,
+  type AuthEndpoint,
+  type AuthPayloads,
+  type AuthResults,
+} from "./auth";
+import {
+  profile,
+  type ProfileEndpoint,
+  type ProfilePayloads,
+  type ProfileResults,
+} from "./profile";
+import {
+  swipe,
+  type SwipeEndpoint,
+  type SwipePayloads,
+  type SwipeResults,
+} from "./swipe";
 
 /**
  * Module registry — har module ka base path + uske endpoints.
@@ -8,12 +24,16 @@ import type { EndpointDef } from '../types';
  */
 export const modules = {
   auth: {
-    base: '/auth',
+    base: "/auth",
     endpoints: auth,
   },
   profile: {
-    base: '/profiles',
+    base: "/profiles",
     endpoints: profile,
+  },
+  swipe: {
+    base: "/swipe",
+    endpoints: swipe,
   },
 } as const;
 
@@ -21,13 +41,16 @@ export type ApiModule = keyof typeof modules;
 
 export type EndpointName =
   | `auth.${AuthEndpoint}`
-  | `profile.${ProfileEndpoint}`;
+  | `profile.${ProfileEndpoint}`
+  | `swipe.${SwipeEndpoint}`;
 
 /** Map dotted name → payloads */
 export type EndpointPayloadMap = {
   [K in AuthEndpoint as `auth.${K}`]: AuthPayloads[K];
 } & {
   [K in ProfileEndpoint as `profile.${K}`]: ProfilePayloads[K];
+} & {
+  [K in SwipeEndpoint as `swipe.${K}`]: SwipePayloads[K];
 };
 
 /** Map dotted name → response data */
@@ -35,6 +58,8 @@ export type EndpointResultMap = {
   [K in AuthEndpoint as `auth.${K}`]: AuthResults[K];
 } & {
   [K in ProfileEndpoint as `profile.${K}`]: ProfileResults[K];
+} & {
+  [K in SwipeEndpoint as `swipe.${K}`]: SwipeResults[K];
 };
 
 export function resolveEndpoint(name: EndpointName): {
@@ -44,7 +69,7 @@ export function resolveEndpoint(name: EndpointName): {
   def: EndpointDef;
   url: string;
 } {
-  const [moduleName, endpointKey] = name.split('.') as [ApiModule, string];
+  const [moduleName, endpointKey] = name.split(".") as [ApiModule, string];
   const mod = modules[moduleName];
 
   if (!mod) {
@@ -67,4 +92,4 @@ export function resolveEndpoint(name: EndpointName): {
   };
 }
 
-export { auth, profile };
+export { auth, profile, swipe };

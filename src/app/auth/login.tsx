@@ -15,9 +15,16 @@ export default function LoginScreen() {
     try {
       const { data, message } = await api.call('auth.login', { email, password });
 
+      const accessToken = data.accessToken || (data as any).access_token || (data as any).token;
+      const refreshToken = data.refreshToken || (data as any).refresh_token;
+
+      if (!accessToken) {
+        throw new Error("No access token received from server");
+      }
+
       api.setTokens({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        accessToken,
+        refreshToken,
       });
 
       Toast.show({

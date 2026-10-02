@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { UserProfile } from "@/api/endpoints/profile";
 
 interface AppState {
   theme: "light" | "dark";
-  user: null | { id: string; name: string };
+  user: UserProfile | null;
 }
 
 const initialState: AppState = {
@@ -19,7 +20,7 @@ const appSlice = createSlice({
     },
     setUser: (
       state,
-      action: PayloadAction<{ id: string; name: string } | null>,
+      action: PayloadAction<UserProfile | null>,
     ) => {
       state.user = action.payload;
     },

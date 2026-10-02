@@ -1,6 +1,11 @@
-import axios, { type AxiosError } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { API_CONFIG } from "./config";
-import { getAccessToken } from "./token";
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  setTokens,
+} from "./token";
 import { ApiError, type ApiErrorBody } from "./types";
 
 /**
@@ -26,7 +31,11 @@ http.interceptors.request.use((config) => {
   const token = getAccessToken();
 
   if (token && !skipAuth && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+    if (typeof config.headers.set === 'function') {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
   }
 
   console.log(
@@ -34,6 +43,8 @@ http.interceptors.request.use((config) => {
       `METHOD: ${config.method}\n` +
       `BASE URL: ${config.baseURL}\n` +
       `URL: ${config.url}\n` +
+      `HEADERS: ${JSON.stringify(config.headers)}\n` +
+      `PARAMS: ${JSON.stringify(config.params ?? {})}\n` +
       `FULL URL: ${config.baseURL ?? ""}${config.url ?? ""}\n` +
       `TIMEOUT: ${config.timeout}\n` +
       "========================================",
@@ -42,19 +53,41 @@ http.interceptors.request.use((config) => {
   return config;
 });
 
+interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (err: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token as string);
+    }
+  });
+  failedQueue = [];
+};
+
 http.interceptors.response.use(
   (response) => {
     console.log(
       "========== VELORA API RESPONSE ==========\n" +
         `STATUS: ${response.status}\n` +
         `URL: ${response.config.baseURL ?? ""}${response.config.url ?? ""}\n` +
+        `BODY: ${JSON.stringify(response.data ?? {})}\n` + // ← added
         "=========================================",
     );
 
     return response;
   },
 
-  (error: AxiosError<ApiErrorBody>) => {
+  async (error: AxiosError<ApiErrorBody>) => {
     console.log(
       "========== VELORA API ERROR ==========\n" +
         `MESSAGE: ${error.message}\n` +
@@ -68,13 +101,83 @@ http.interceptors.response.use(
         "======================================",
     );
 
+    const originalRequest = error.config as RetryAxiosRequestConfig;
     const status = error.response?.status ?? 0;
-    const body = error.response?.data;
 
-    const message =
+    // Handle Token Refresh on 401
+    if (status === 401 && originalRequest && !originalRequest._retry) {
+      const refreshToken = getRefreshToken();
+
+      // If we don't have a refresh token or we are hitting auth endpoints, just fail
+      if (!refreshToken || originalRequest.url?.includes("/auth/")) {
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return http(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshUrl = `${API_CONFIG.baseURL}${API_CONFIG.prefix}/auth/refresh-token`;
+        const response = await axios.post(refreshUrl, { refreshToken });
+
+        // Handle both flat response or enveloped { data }
+        const body = response.data;
+        const tokens = body?.data ? body.data : body;
+        
+        const newAccessToken = tokens?.accessToken || tokens?.access_token || tokens?.token;
+        const newRefreshToken = tokens?.refreshToken || tokens?.refresh_token;
+
+        if (newAccessToken) {
+          setTokens({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken || refreshToken,
+          });
+
+          processQueue(null, newAccessToken);
+          if (originalRequest.headers) {
+            if (typeof originalRequest.headers.set === 'function') {
+              originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
+            } else {
+              originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            }
+          }
+          return http(originalRequest);
+        } else {
+          throw new Error("Invalid token response");
+        }
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        clearTokens();
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    const body = error.response?.data;
+    let message =
       body?.message ||
       error.message ||
       "Something went wrong. Please try again.";
+
+    if (typeof message !== "string") {
+      message = String(message);
+    }
 
     return Promise.reject(new ApiError(message, status, body));
   },
